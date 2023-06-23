@@ -26,8 +26,8 @@ export class AppService {
     ]);
     console.log('Data ingestion successful');
   }
-  private async ingestAppointments(){
-    const topicName = 'appoinments';
+  private async ingestAppointments() {
+    const topicName = 'appointment';
     const consumerGroupId = 'data-ingestion-service-appointments';
 
     const consumer = this.kafka.consumer({
@@ -44,13 +44,13 @@ export class AppService {
         const [operation, id] = message.key.toString().split('#');
         const value = JSON.parse(message.value.toString());
         const appointments = Appointments.fromJSON(value);
-        if (operation === 'create') {
-          await this.appointmentsRepository.save(appointments);
-        } else if (operation === 'update') {
-          await this.appointmentsRepository.update(id, appointments);
-        } else if (operation === 'delete') {
-          await this.appointmentsRepository.delete(id);
-        }
+          if (operation === 'create') {
+            await this.appointmentsRepository.save(appointments);
+          } else if (operation === 'update') {
+            await this.appointmentsRepository.update(id, appointments);
+          } else if (operation === 'delete') {
+            await this.appointmentsRepository.delete(id);
+          }
       },
     });
 
@@ -61,5 +61,5 @@ export class AppService {
     });
 
   }
- 
+
 }

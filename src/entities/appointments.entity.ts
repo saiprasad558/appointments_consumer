@@ -20,8 +20,8 @@ export class Appointments {
   @Column()
   slotTime: string;
 
-  @Column()
-  createdAt: string;
+  @Column({ nullable: true })
+  createdAt: Date | null;
 
   @Column()
   createdBy: string;
@@ -35,48 +35,53 @@ export class Appointments {
   @Column()
   slotId: string;
 
-  @Column()
-  doctorName: string;
+  @Column({  nullable: true })
+  doctorName: string | null;
 
-  @Column()
-  doctorImage: string;
+  @Column({ nullable: true })
+  doctorImage: string | null;
 
-  @Column()
-  patientImage: string;
+  @Column({ nullable: true })
+  patientImage: string | null;
 
-  @Column()
-  patientName: string;
+  @Column({ nullable: true })
+  patientName: string | null;
 
-  @Column()
-  updatedAt: string;
+  @Column({ nullable: true })
+  updatedAt: Date | null;
 
-  @Column()
-  isExist: string;
+  @Column({ nullable: true })
+  isExist: boolean | null;
 
-  @Column()
-  connectyCubeId: string;
+  @Column({ nullable: true })
+  connectyCubeId: string | null;
 
-
+  static dateFunction (date?:string) {
+     if(date &&!isNaN(Date.parse(date)) ){
+      return new Date(date)
+     }
+     return null
+  }
   static fromJSON(json: Record<string, any>): Appointments {
     const appointments = new Appointments();
     appointments.id = json?.id;
-    appointments.appointmentDate = json?.appointmentDate;
-    appointments.appointmentStatus = json?.appointmentStatus;
-    appointments.appointmentType = json?.appointmentType;
-    appointments.connectyCubeId = json?.connectyCubeId;
-    appointments.createdAt = json?.createdAt;
-    appointments.createdBy = json?.createdBy;
-    appointments.doctorId = json?.doctorId;
-    appointments.doctorImage = json?.doctorImage;
-    appointments.doctorName = json?.doctorName;
-    appointments.isExist = json?.isExist;
-    appointments.patientId = json?.patientId;
-    appointments.patientImage = json?.patientImage;
-    appointments.patientName = json?.patientName;
-    appointments.slotId = json?.slotId;
-    appointments.slotTime = json?.slotTime;
-    appointments.symptoms = json?.symptoms;
-    appointments.updatedAt = json?.updatedAt;
+    appointments.appointmentDate = json?.appointmentDate ?? "";
+    appointments.appointmentStatus = json?.appointmentStatus ?? false
+    appointments.appointmentType = json?.appointmentType ?? "";
+    appointments.connectyCubeId = json?.connectyCubeId ?? "";
+    appointments.createdAt = this.dateFunction(json?.createdAt) ;
+    appointments.createdBy = json?.createdBy ?? "";
+    appointments.doctorId = json?.doctorId ?? "";
+    appointments.doctorImage = json?.doctorImage ?? "";
+    appointments.doctorName = json?.doctorName ?? "";
+    appointments.isExist = json?.isExist ??false;
+    appointments.patientId = json?.patientId ?? "";
+    appointments.patientImage = json?.patientImage ?? "";
+    appointments.patientName = json?.patientName ?? "";
+    appointments.slotId = json?.slotId ?? "";
+    appointments.slotTime = json?.slotTime ?? "";
+    appointments.symptoms = json?.symptoms ?? "";
+    appointments.updatedAt = this.dateFunction(json?.updatedAt);
     return appointments;
     
   }
