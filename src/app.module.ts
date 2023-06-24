@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import configuration from './config/configuration';
 import { AppService } from './app.service';
-import { Appointments } from './entities/appointments.entity';
+import { Appointment } from './entities/appointment.entity';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { Appointments } from './entities/appointments.entity';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([Appointments]),
+    TypeOrmModule.forFeature([Appointment]),
     ClientsModule.registerAsync([
       {
         name: 'APPOINTMENTS_CONSUMER',

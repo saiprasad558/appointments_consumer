@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kafka } from 'kafkajs';
 import { Repository } from 'typeorm';
-import { Appointments } from './entities/appointments.entity';
+import { Appointment } from './entities/appointment.entity';
 
 @Injectable()
 export class AppService {
@@ -11,8 +11,8 @@ export class AppService {
 
   constructor(
     private readonly configService: ConfigService,
-    @InjectRepository(Appointments)
-    private readonly appointmentsRepository: Repository<Appointments>,
+    @InjectRepository(Appointment)
+    private readonly appointmentsRepository: Repository<Appointment>,
   ) {
     this.kafka = new Kafka({
       clientId: configService.get<string>('kafka.clientId'),
@@ -21,11 +21,10 @@ export class AppService {
   }
 
   async ingestData() {
-    await Promise.all([
-      this.ingestAppointments(),
-    ]);
+    await Promise.all([this.ingestAppointments()]);
     console.log('Data ingestion successful');
   }
+
   private async ingestAppointments() {
     const topicName = 'appointment';
     const consumerGroupId = 'data-ingestion-service-appointments';
@@ -43,14 +42,20 @@ export class AppService {
       eachMessage: async ({ message }) => {
         const [operation, id] = message.key.toString().split('#');
         const value = JSON.parse(message.value.toString());
-        const appointments = Appointments.fromJSON(value);
-          if (operation === 'create') {
-            await this.appointmentsRepository.save(appointments);
-          } else if (operation === 'update') {
-            await this.appointmentsRepository.update(id, appointments);
-          } else if (operation === 'delete') {
-            await this.appointmentsRepository.delete(id);
-          }
+        if (!Appointment.dateFunction(value?.appointmentDate)) {
+          console.log(
+            `Skipping ${operation} operation for ${id} due to invalid appointmentDate`,
+          );
+          return;
+        }
+        const appointments = Appointment.fromJSON(value);
+        if (operation === 'create') {
+          await this.appointmentsRepository.save(appointments);
+        } else if (operation === 'update') {
+          await this.appointmentsRepository.update(id, appointments);
+        } else if (operation === 'delete') {
+          await this.appointmentsRepository.delete(id);
+        }
       },
     });
 
@@ -59,7 +64,5 @@ export class AppService {
       partition: 0,
       offset: '0',
     });
-
   }
-
 }
