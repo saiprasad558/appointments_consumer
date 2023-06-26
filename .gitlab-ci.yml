@@ -37,6 +37,8 @@ deploy-dev:
     - echo $SECRET_YAML | base64 --decode >> k8s/secret.yaml
     - gcloud container clusters get-credentials event-driven-cluster --zone us-central1-c --project $PROJECT_ID
   script:
+    - kubectl set image deployment/appointments-consumer-deployment appointments-consumer=gcr.io/$PROJECT_ID/$NAME:latest
+    - kubectl describe deployment appointments-consumer-deployment
     - kubectl apply -f k8s/secret.yaml
     - kubectl apply -f k8s/deployment.yaml
     - kubectl rollout restart deployment appointments-consumer-deployment

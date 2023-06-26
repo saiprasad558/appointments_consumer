@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: appointments-consumer
-          image: gcr.io/$PROJECT_ID/appointments-consumer:latest
+          image: appointments-consumer-image:latest
           ports:
             - containerPort: 8088
           env:
