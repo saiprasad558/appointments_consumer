@@ -32,6 +32,7 @@ deploy-dev:
     - echo $SERVICE_ACCOUNT | base64 --decode >> key.json
     - gcloud auth activate-service-account --key-file key.json
     - gcloud config set project $PROJECT_ID
+    - gcloud container clusters get-credentials event-driven-cluster --zone us-central1-c --project soundheart-dev-94cc1
   script:
     - kubectl apply -f k8s/secret.yaml
     - kubectl apply -f k8s/deployment.yaml
