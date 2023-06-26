@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointments-consumer-deployment
+  labels:
+    app: appointments-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appointments-consumer
+  template:
+    metadata:
+      labels:
+        app: appointments-consumer
+    spec:
+      containers:
+        - name: appointments-consumer
+          image: gcr.io/soundheart-dev-94cc1/appointments-consumer:latest
+          ports:
+            - containerPort: 8088
+          env:
+            - name: KAFKA
+              valueFrom:
+                secretKeyRef:
+                  name: appointments-consumer-secret
+                  key: kafka-url
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: appointments-consumer-secret
+                  key: pg-password
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: appointments-consumer-secret
+                  key: pg-user
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: appointments-consumer-secret
+                  key: pg-db
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: appointments-consumer-secret
+                  key: pg-host
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: appointments-consumer-secret
+                  key: pg-port
