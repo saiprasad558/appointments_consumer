@@ -48,14 +48,20 @@ export class AppService {
           );
           return;
         }
-        const appointments = Appointment.fromJSON(value);
+        const appointment = Appointment.fromJSON(value);
+        const data: Record<string, Appointment> = {};
         if (operation === 'create') {
-          await this.appointmentsRepository.save(appointments);
+          data[id] = appointment;
         } else if (operation === 'update') {
-          await this.appointmentsRepository.update(id, appointments);
+          data[id] = {
+            ...data[id],
+            ...appointment,
+          };
         } else if (operation === 'delete') {
-          await this.appointmentsRepository.delete(id);
+          delete data[id];
         }
+
+        await this.appointmentsRepository.save(Object.values(data));
       },
     });
 
