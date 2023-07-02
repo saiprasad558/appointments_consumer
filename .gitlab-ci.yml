@@ -83,6 +83,5 @@ deploy-cvi:
     - kubectl rollout restart deployment appointments-consumer-deployment
   needs:
     - build-cvi
-  when: manual
   tags:
     - kubernetes
